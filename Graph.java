@@ -129,6 +129,7 @@ public class Graph
     while(!q.isEmpty())
     {
       GraphVertex u = q.remove();
+      this.visitedOrderList.add(u);
       for(int vertexID : u.getNearestNeighbors())
       {
         if(!hasVisited(vertexID))
@@ -136,7 +137,6 @@ public class Graph
           makeGray(this.vertices.get(vertexID));
           this.visitedVertexes.put(vertexID, time + 1);
           this.parentVertex.put(vertexID, u.getValue());
-          dfsVisit((GraphVertex) this.vertices.get(vertexID),time);
           q.add(this.vertices.get(vertexID));
         }
       }
