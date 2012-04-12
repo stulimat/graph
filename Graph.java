@@ -1,33 +1,35 @@
 package graph;
 import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.Queue;
 
 public class Graph 
 {
-  HashMap vertices;
+  private HashMap<Integer,GraphVertex> vertices;
   //K-V pair that holds a vertex and its depth. If not found, the 
-  HashMap visitedVertexes = new HashMap();
+  private HashMap<Integer,Integer> visitedVertexes = new HashMap<Integer,Integer>();
   //K-V pair that holds a vertex and its parent.
-  HashMap parentVertex = new HashMap();
+  private HashMap<Integer,Integer> parentVertex = new HashMap<Integer, Integer>();
   //Holds the finish time for the vertex and its parent.
-  HashMap finishTimes = new HashMap(); 
+  private HashMap<Integer,Integer> finishTimes = new HashMap<Integer,Integer>();
+  private List<GraphVertex> visitedOrderList = new ArrayList<GraphVertex>();
   //Constructor for Graph class
   //Basic Constructor instantiates a null set
   public Graph()
   {
-    this.vertices = new HashMap();
+    this.vertices = new HashMap<Integer,GraphVertex>();
   }
   //Constructor passed a set of vertices
-  public Graph(HashMap vertices)
+  public Graph(HashMap<Integer,GraphVertex> vertices)
   {
     this.vertices = vertices;
   }
   //Constructor passed a GraphVertex as the first vertex in the graph. Makes a one-node graph.
   public Graph(GraphVertex vertex)
   {
-    this.vertices = new HashMap();
+    this.vertices = new HashMap<Integer,GraphVertex>();
     this.vertices.put(vertex.getValue(),vertex);
   }
   public void add(GraphVertex vertex)
@@ -51,18 +53,15 @@ public class Graph
   }
   
   //Execute a depth-first search and print out the nodes in DFS order.
-  public void dfs()
+  public List<GraphVertex> dfs(GraphVertex g)
   {
     int time = 0;
     resetGraph();
-    Set<Integer> keys = this.vertices.keySet();
-    for(int name : keys)
+    if(!this.visitedVertexes.containsKey(g.getValue()))
     {
-      if(this.visitedVertexes.containsKey(name))
-      {
-        dfsVisit((GraphVertex) this.vertices.get(name),time);
-      }
+      dfsVisit(this.vertices.get(g.getValue()),time);
     }
+    return this.visitedOrderList;
   }
   //Perform a depth-first-search visit to a node 
   public void dfsVisit(GraphVertex vertex,int time)
@@ -70,6 +69,8 @@ public class Graph
     time++;
     //Put the value as "null" to mark as "gray". 
     makeGray(vertex);
+    //Add to the list of visited vertexes
+    this.visitedOrderList.add(vertex);
     for(int vertexID : vertex.getNearestNeighbors())
     {
       if(!hasVisited(vertexID))
@@ -98,13 +99,51 @@ public class Graph
       this.finishTimes.clear();
       this.parentVertex.clear();
       this.visitedVertexes.clear();
+      this.visitedOrderList.clear();
   }
   //Checks to see if a node has been visited or not:
   public boolean hasVisited(int name)
   {
     return this.visitedVertexes.containsKey(name);
   }
+  public String toString()
+  {
+    String output = new String();
+    for(GraphVertex v : this.vertices.values())
+    {
+      output += v.getValue() + "{" + v.getNearestNeighbors().toString() + "}";
+    }
+    return output;
+  }
   
-  
+  public List<GraphVertex> bfs(GraphVertex g)
+  {
+    resetGraph();
+    int time = 0;
+    g = this.vertices.get(g.getValue());
+   
+    makeGray(g);
+    Queue<GraphVertex> q = new LinkedList<GraphVertex>();
+    q.add(g);
+    this.visitedVertexes.put(g.getValue(), time);
+    while(!q.isEmpty())
+    {
+      GraphVertex u = q.remove();
+      for(int vertexID : u.getNearestNeighbors())
+      {
+        if(!hasVisited(vertexID))
+        {
+          makeGray(this.vertices.get(vertexID));
+          this.visitedVertexes.put(vertexID, time + 1);
+          this.parentVertex.put(vertexID, u.getValue());
+          dfsVisit((GraphVertex) this.vertices.get(vertexID),time);
+          q.add(this.vertices.get(vertexID));
+        }
+      }
+      this.finishTimes.put(u.getValue(), time);
+      
+    }
+    return this.visitedOrderList;
+  }
 }
 

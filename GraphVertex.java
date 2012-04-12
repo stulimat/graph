@@ -28,7 +28,6 @@ public class GraphVertex
 	  this.value = value;
 	  this.nearestNeighbors = new ArrayList<Integer>();
 	  this.isVisited = false;
-	  this.predecessor = new Integer(null);
   }
   //Constructor for which an adjacency list but no value is provided.
   public GraphVertex(ArrayList<Integer> list)
@@ -36,7 +35,6 @@ public class GraphVertex
 	  this.value = new Integer(null);
 	  this.nearestNeighbors = list;
 	  this.isVisited = false;
-	  this.predecessor = new Integer(null);
   }
   //Constructor for which an adjacency list and value are provided.
   public GraphVertex(int value, ArrayList<Integer> list)
@@ -44,7 +42,6 @@ public class GraphVertex
 	  this.value = value;
 	  this.nearestNeighbors = list;
 	  this.isVisited = false;
-	  this.predecessor = new Integer(null);
   }
   // Get a list of the nearest neighbors.
  
